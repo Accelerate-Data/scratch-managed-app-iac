@@ -1,51 +1,32 @@
-# notion-cp
-Downloads notion markdown files into local folder.
+# IaC scaffold for PRD-30
 
-## Overview
-Simple tool to download a Notion page as Markdown using a Notion integration API key.
+This folder holds the Bicep deployment for PRD-30 (managed application infrastructure). Files are stubs; fill out modules per PRD-30, RFC-42, RFC-64, and RFC-71.
 
-## Quick start
-1. Create a virtualenv and install dependencies (recommended):
+## Layout
+- `main.bicep` — subscription-scope entrypoint; wires RFC-64 parameters into resource-group modules.
+- `modules/*.bicep` — per-domain modules (identity, network, security, data, compute, gateway, ai, automation, diagnostics).
+- `lib/` — shared helpers (naming, constants).
+- `params.dev.json` — sample parameters for local testing.
 
+## Run locally
 ```bash
-# create & activate a venv and install deps in it
-make setup
-source .venv/bin/activate
-# or, if you prefer not to use the venv, run:
-# make install
+az group create -n rg-vibedata-dev -l eastus
+az deployment sub create \
+  -f iac/main.bicep \
+  -l eastus \
+  -p @iac/params.dev.json
 ```
 
-2. Provide your Notion integration key via an environment variable (or a `.env` file):
-
+For a dry run without changes:
 ```bash
-export NOTION_API_KEY="secret"
-# or create a .env file with:
-# NOTION_API_KEY=secret
+az deployment sub what-if -f iac/main.bicep -l eastus -p @iac/params.dev.json
 ```
 
-3. Run the downloader:
-
+## Dev/test state check
+To verify the live RG matches the Bicep in dev/test:
 ```bash
-# install dependencies (recommended)
-make install
-
-# run tests
-make test
-
-# run downloader
-python3 scripts/notion_download.py -p https://www.notion.so/your-page-url
-# or
-python3 scripts/notion_download.py --page <page-id-or-url> -o saved_page.md
+./tests/state_check/what_if.sh eastus iac/params.dev.json
+python tests/state_check/diff_report.py tests/state_check/what-if.json
 ```
 
-Output is written to `output/<page-title>.md` by default.
-
-## Running tests
-
-```bash
-pytest -q
-```
-
-## Notes
-- The script supports common block types (paragraphs, headings, lists, code, quotes, images) but is intentionally minimal; open an issue if you need richer conversion (tables, toggles, callouts).
-
+Keep parameter names and casing aligned with RFC-64 to match the eventual Marketplace handoff.

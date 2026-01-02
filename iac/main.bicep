@@ -58,6 +58,17 @@ resource deploymentRg 'Microsoft.Resources/resourceGroups@2021-04-01' existing =
   name: resourceGroupName
 }
 
+module diagnostics 'modules/diagnostics.bicep' = {
+  name: 'diagnostics'
+  scope: deploymentRg
+  params: {
+    location: location
+    lawRetentionDays: lawRetentionDays
+    lawName: naming.outputs.names.law
+    tags: tags
+  }
+}
+
 module identity 'modules/identity.bicep' = {
   name: 'identity'
   scope: deploymentRg
@@ -186,17 +197,6 @@ module automation 'modules/automation.bicep' = {
     uamiId: identity.outputs.uamiId
     adminObjectId: adminObjectId
     lawId: diagnostics.outputs.lawId
-    tags: tags
-  }
-}
-
-module diagnostics 'modules/diagnostics.bicep' = {
-  name: 'diagnostics'
-  scope: deploymentRg
-  params: {
-    location: location
-    lawRetentionDays: lawRetentionDays
-    lawName: naming.outputs.names.law
     tags: tags
   }
 }
