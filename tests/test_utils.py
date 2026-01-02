@@ -1,6 +1,6 @@
 import pytest
 
-from scripts.notion_download import extract_page_id, slugify
+from scripts.n2m.utils import extract_page_id, slugify
 
 
 def test_extract_from_url_with_dashes():
