@@ -40,7 +40,7 @@ resource automation 'Microsoft.Automation/automationAccounts@2023-11-01' = {
 output automationId string = automation.id
 
 resource automationDiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  name: 'diag-law'
+  name: 'diag-law-automation'
   scope: automation
   properties: {
     workspaceId: lawId

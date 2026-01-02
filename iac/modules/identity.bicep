@@ -9,6 +9,13 @@ param uamiName string
 @description('Customer admin Entra object ID.')
 param adminObjectId string
 
+@description('Principal type for adminObjectId (User or Group).')
+@allowed([
+  'User'
+  'Group'
+])
+param adminPrincipalType string = 'User'
+
 @description('Optional tags to apply.')
 param tags object = {}
 
@@ -35,7 +42,7 @@ resource customerReader 'Microsoft.Authorization/roleAssignments@2020-04-01-prev
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'acdd72a7-3385-48ef-bd42-f606fba81ae7') // Reader
     principalId: adminObjectId
-    principalType: 'ServicePrincipal'
+    principalType: adminPrincipalType
   }
 }
 

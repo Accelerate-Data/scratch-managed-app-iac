@@ -130,7 +130,7 @@ output searchId string = search.id
 output aiId string = ai.id
 
 resource searchDiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  name: 'diag-law'
+  name: 'diag-law-search'
   scope: search
   properties: {
     workspaceId: lawId
@@ -150,7 +150,7 @@ resource searchDiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' =
 }
 
 resource aiDiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  name: 'diag-law'
+  name: 'diag-law-ai'
   scope: ai
   properties: {
     workspaceId: lawId

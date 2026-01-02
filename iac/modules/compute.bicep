@@ -253,7 +253,7 @@ output appUiId string = appUi.id
 output funcId string = func.id
 
 resource appApiDiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  name: 'diag-law'
+  name: 'diag-law-appapi'
   scope: appApi
   properties: {
     workspaceId: lawId
@@ -281,7 +281,7 @@ resource appApiDiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' =
 }
 
 resource appUiDiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  name: 'diag-law'
+  name: 'diag-law-appui'
   scope: appUi
   properties: {
     workspaceId: lawId
@@ -309,7 +309,7 @@ resource appUiDiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = 
 }
 
 resource funcDiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  name: 'diag-law'
+  name: 'diag-law-func'
   scope: func
   properties: {
     workspaceId: lawId

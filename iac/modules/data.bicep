@@ -174,7 +174,7 @@ resource psqlAdminRole 'Microsoft.Authorization/roleAssignments@2020-04-01-previ
 output psqlId string = psql.id
 
 resource psqlDiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  name: 'diag-law'
+  name: 'diag-law-psql'
   scope: psql
   properties: {
     workspaceId: lawId

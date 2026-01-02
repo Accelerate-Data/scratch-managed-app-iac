@@ -350,7 +350,7 @@ output acrId string = acr.id
 
 // Diagnostic settings
 resource kvDiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  name: 'diag-law'
+  name: 'diag-law-kv'
   scope: kv
   properties: {
     workspaceId: lawId
@@ -370,7 +370,7 @@ resource kvDiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
 }
 
 resource stDiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  name: 'diag-law'
+  name: 'diag-law-st'
   scope: st
   properties: {
     workspaceId: lawId
@@ -398,7 +398,7 @@ resource stDiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
 }
 
 resource acrDiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  name: 'diag-law'
+  name: 'diag-law-acr'
   scope: acr
   properties: {
     workspaceId: lawId
