@@ -1,5 +1,7 @@
 .env
 .venv/
+.DS_Store
+docs/
 venv/
 __pycache__/
 *.pyc

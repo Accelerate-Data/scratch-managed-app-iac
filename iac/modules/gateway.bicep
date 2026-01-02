@@ -72,6 +72,21 @@ resource appGw 'Microsoft.Network/applicationGateways@2023-04-01' = {
       maxCapacity: 1
     }
     enableHttp2: true
+    backendHttpSettingsCollection: [
+      {
+        name: 'default-setting'
+        properties: {
+          protocol: 'Https'
+          port: 443
+          pickHostNameFromBackendAddress: true
+          requestTimeout: 60
+          connectionDraining: {
+            enabled: true
+            drainTimeoutInSec: 60
+          }
+        }
+      }
+    ]
     gatewayIPConfigurations: [
       {
         name: 'appgw-ipconfig'

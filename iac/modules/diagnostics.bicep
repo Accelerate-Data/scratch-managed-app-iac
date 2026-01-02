@@ -36,18 +36,16 @@ resource customTable 'Microsoft.OperationalInsights/workspaces/tables@2021-12-01
     schema: {
       name: 'VibeData_Operations_CL'
       columns: [
-        {
-          name: 'Message'
-          type: 'string'
-        }
-        {
-          name: 'Severity'
-          type: 'string'
-        }
-        {
-          name: 'Timestamp'
-          type: 'datetime'
-        }
+        { name: 'TimeGenerated'; type: 'datetime' }
+        { name: 'Category'; type: 'string' }
+        { name: 'CorrelationId'; type: 'string' }
+        { name: 'InstanceId'; type: 'string' }
+        { name: 'ComponentId'; type: 'string' }
+        { name: 'Operation'; type: 'string' }
+        { name: 'Status'; type: 'string' }
+        { name: 'DurationMs'; type: 'long' }
+        { name: 'Message'; type: 'string' }
+        { name: 'Details'; type: 'dynamic' }
       ]
     }
   }

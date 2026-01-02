@@ -121,6 +121,8 @@ module data 'modules/data.bicep' = {
     subnetPeId: network.outputs.subnetPeId
     uamiPrincipalId: identity.outputs.uamiPrincipalId
     lawId: diagnostics.outputs.lawId
+    uamiClientId: identity.outputs.uamiClientId
+    uamiId: identity.outputs.uamiId
     tags: tags
   }
 }

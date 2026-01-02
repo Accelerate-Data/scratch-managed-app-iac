@@ -65,6 +65,7 @@ resource appApi 'Microsoft.Web/sites@2023-12-01' = {
   }
   properties: {
     httpsOnly: true
+    publicNetworkAccess: 'Disabled'
     serverFarmId: asp.id
     siteConfig: {
       linuxFxVersion: 'DOCKER|${defaultContainer}'
@@ -73,6 +74,8 @@ resource appApi 'Microsoft.Web/sites@2023-12-01' = {
       alwaysOn: true
       vnetRouteAllEnabled: true
       virtualNetworkSubnetId: subnetAppsvcId
+      scmIpSecurityRestrictionsDefaultAction: 'Deny'
+      ipSecurityRestrictionsDefaultAction: 'Deny'
     }
   }
 }
@@ -90,6 +93,7 @@ resource appUi 'Microsoft.Web/sites@2023-12-01' = {
   }
   properties: {
     httpsOnly: true
+    publicNetworkAccess: 'Disabled'
     serverFarmId: asp.id
     siteConfig: {
       linuxFxVersion: 'DOCKER|${defaultContainer}'
@@ -98,6 +102,8 @@ resource appUi 'Microsoft.Web/sites@2023-12-01' = {
       alwaysOn: true
       vnetRouteAllEnabled: true
       virtualNetworkSubnetId: subnetAppsvcId
+      scmIpSecurityRestrictionsDefaultAction: 'Deny'
+      ipSecurityRestrictionsDefaultAction: 'Deny'
     }
   }
 }
@@ -115,6 +121,7 @@ resource func 'Microsoft.Web/sites@2023-12-01' = {
   }
   properties: {
     httpsOnly: true
+    publicNetworkAccess: 'Disabled'
     serverFarmId: asp.id
     siteConfig: {
       linuxFxVersion: 'DOCKER|${defaultContainer}'
@@ -123,6 +130,8 @@ resource func 'Microsoft.Web/sites@2023-12-01' = {
       alwaysOn: true
       vnetRouteAllEnabled: true
       virtualNetworkSubnetId: subnetAppsvcId
+      scmIpSecurityRestrictionsDefaultAction: 'Deny'
+      ipSecurityRestrictionsDefaultAction: 'Deny'
     }
   }
 }
