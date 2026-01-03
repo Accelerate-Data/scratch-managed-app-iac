@@ -10,7 +10,7 @@ Added strict drift detection and enforcement workflow for dev/test environments 
   - `scripts/deploy/apply_rg.sh` for apply in CD/manual workflows.
 - README updated with dev/test strict enforcement instructions.
 - RG guardrail: deployment scripts require the target RG to be tagged `IAC=true`.
-- Documented the additional delegated `/28` `snet-psql` subnet used for PostgreSQL.
+- Deviation from PRD/RFC subnet list: adds an extra delegated `/28` `snet-psql` for PostgreSQL Flexible Server (in addition to PRD-30/RFC-71 subnets). Rationale: dedicated delegation for PG private access; keeps PE subnet separate.
 - CI hooks (recommended): `az bicep build` for `main.bicep` and `main.rg.bicep`, `what_if_rg.sh` + `diff_report.py` as a gate; added shellcheck-based lint test.
 
 ## Testing
