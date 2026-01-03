@@ -32,4 +32,4 @@ python tests/state_check/diff_report.py tests/state_check/what-if.json
 Keep parameter names and casing aligned with RFC-64 to match the eventual Marketplace handoff.
 
 ## Release Notes
-- 2026-01-03 — v0.1.0 baseline: docs/RELEASE-NOTES-2026-01-03.md
+- 2026-01-03 — v0.1.0 baseline: [docs/RELEASE-NOTES-2026-01-03.md](docs/RELEASE-NOTES-2026-01-03.md)
