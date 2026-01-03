@@ -9,6 +9,13 @@ param location string
 @description('Customer admin Entra object ID (RFC-64).')
 param adminObjectId string
 
+@description('Principal type for adminObjectId (User or Group).')
+@allowed([
+  'User'
+  'Group'
+])
+param adminPrincipalType string = 'User'
+
 @description('Services VNet CIDR block (RFC-64).')
 param servicesVnetCidr string
 
@@ -76,6 +83,7 @@ module identity 'modules/identity.bicep' = {
     location: location
     uamiName: naming.outputs.names.uami
     adminObjectId: adminObjectId
+    adminPrincipalType: adminPrincipalType
     tags: tags
   }
 }
@@ -113,7 +121,6 @@ module security 'modules/security.bicep' = {
     kvName: naming.outputs.names.kv
     storageName: naming.outputs.names.storage
     acrName: naming.outputs.names.acr
-    vnetName: naming.outputs.names.vnet
     subnetPeId: network.outputs.subnetPeId
     uamiPrincipalId: identity.outputs.uamiPrincipalId
     lawId: diagnostics.outputs.lawId
@@ -128,8 +135,7 @@ module data 'modules/data.bicep' = {
     location: location
     psqlName: naming.outputs.names.psql
     postgresComputeTier: postgresComputeTier
-    vnetName: naming.outputs.names.vnet
-    subnetPeId: network.outputs.subnetPeId
+    subnetPsqlId: network.outputs.subnetPsqlId
     uamiPrincipalId: identity.outputs.uamiPrincipalId
     lawId: diagnostics.outputs.lawId
     uamiClientId: identity.outputs.uamiClientId
@@ -148,10 +154,10 @@ module compute 'modules/compute.bicep' = {
     appApiName: naming.outputs.names.appApi
     appUiName: naming.outputs.names.appUi
     funcName: naming.outputs.names.funcOps
-    vnetName: naming.outputs.names.vnet
     subnetAppsvcId: network.outputs.subnetAppsvcId
     subnetPeId: network.outputs.subnetPeId
     uamiId: identity.outputs.uamiId
+    storageAccountName: naming.outputs.names.storage
     lawId: diagnostics.outputs.lawId
     tags: tags
   }
@@ -166,7 +172,6 @@ module gateway 'modules/gateway.bicep' = {
     pipName: naming.outputs.names.pipAgw
     customerIpRanges: customerIpRanges
     publisherIpRanges: publisherIpRanges
-    vnetName: naming.outputs.names.vnet
     subnetAppgwId: network.outputs.subnetAppgwId
     lawId: diagnostics.outputs.lawId
     tags: tags
@@ -181,7 +186,6 @@ module ai 'modules/ai.bicep' = {
     aiServicesTier: aiServicesTier
     searchName: naming.outputs.names.search
     aiName: naming.outputs.names.ai
-    vnetName: naming.outputs.names.vnet
     subnetPeId: network.outputs.subnetPeId
     lawId: diagnostics.outputs.lawId
     tags: tags
@@ -196,6 +200,8 @@ module automation 'modules/automation.bicep' = {
     automationName: naming.outputs.names.automation
     uamiId: identity.outputs.uamiId
     adminObjectId: adminObjectId
+    adminPrincipalType: adminPrincipalType
+    subnetPeId: network.outputs.subnetPeId
     lawId: diagnostics.outputs.lawId
     tags: tags
   }

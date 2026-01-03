@@ -18,13 +18,6 @@ param nsgPeName string
 @description('Optional tags to apply.')
 param tags object = {}
 
-var prefixLength = int(split(servicesVnetCidr, '/')[1])
-
-// Validate CIDR size per RFC-64/71
-@minLength(1)
-param _cidrValidation string = ''
-assert(prefixLength >= 16 && prefixLength <= 24, 'servicesVnetCidr must be between /16 and /24')
-
 resource vnet 'Microsoft.Network/virtualNetworks@2023-04-01' = {
   name: vnetName
   location: location
@@ -82,6 +75,23 @@ resource vnet 'Microsoft.Network/virtualNetworks@2023-04-01' = {
           networkSecurityGroup: {
             id: nsgPe.id
           }
+        }
+      }
+      {
+        name: 'snet-psql'
+        properties: {
+          // /28 from the base CIDR reserved for PostgreSQL
+          addressPrefix: cidrSubnet(servicesVnetCidr, 8, 4)
+          delegations: [
+            {
+              name: 'Microsoft.DBforPostgreSQL/flexibleServers'
+              properties: {
+                serviceName: 'Microsoft.DBforPostgreSQL/flexibleServers'
+              }
+            }
+          ]
+          privateEndpointNetworkPolicies: 'Disabled'
+          privateLinkServiceNetworkPolicies: 'Disabled'
         }
       }
     ]
@@ -341,9 +351,11 @@ output subnetAppgwId string = vnet.properties.subnets[0].id
 output subnetAksId string = vnet.properties.subnets[1].id
 output subnetAppsvcId string = vnet.properties.subnets[2].id
 output subnetPeId string = vnet.properties.subnets[3].id
+output subnetPsqlId string = vnet.properties.subnets[4].id
 output subnetAppgwPrefix string = vnet.properties.subnets[0].properties.addressPrefix
 output subnetAksPrefix string = vnet.properties.subnets[1].properties.addressPrefix
 output subnetAppsvcPrefix string = vnet.properties.subnets[2].properties.addressPrefix
 output subnetPePrefix string = vnet.properties.subnets[3].properties.addressPrefix
+output subnetPsqlPrefix string = vnet.properties.subnets[4].properties.addressPrefix
 
 // TODO: deploy VNet, subnets, NSGs, and private endpoints per RFC-42.

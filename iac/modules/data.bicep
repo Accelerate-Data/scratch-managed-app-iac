@@ -9,11 +9,8 @@ param postgresComputeTier string
 @description('PostgreSQL server name.')
 param psqlName string
 
-@description('Services VNet name (for private endpoint).')
-param vnetName string
-
-@description('Private Endpoints subnet ID.')
-param subnetPeId string
+@description('Delegated subnet ID for PostgreSQL Flexible Server.')
+param subnetPsqlId string
 
 @description('Principal ID of the UAMI for RBAC.')
 param uamiPrincipalId string
@@ -30,10 +27,6 @@ param uamiId string
 @description('Optional tags to apply.')
 param tags object = {}
 
-resource vnet 'Microsoft.Network/virtualNetworks@2023-04-01' existing = {
-  name: vnetName
-}
-
 resource psql 'Microsoft.DBforPostgreSQL/flexibleServers@2023-06-01-preview' = {
   name: psqlName
   location: location
@@ -49,13 +42,14 @@ resource psql 'Microsoft.DBforPostgreSQL/flexibleServers@2023-06-01-preview' = {
     storage: {
       storageSizeGB: 128
       autoGrow: 'Enabled'
-      iops: 0
     }
     backup: {
       backupRetentionDays: 7
       geoRedundantBackup: 'Disabled'
     }
     network: {
+      delegatedSubnetResourceId: subnetPsqlId
+      privateDnsZoneArmResourceId: resourceId(resourceGroup().name, 'Microsoft.Network/privateDnsZones', 'privatelink.postgres.database.azure.com')
       publicNetworkAccess: 'Disabled'
     }
     authConfig: {
@@ -75,6 +69,7 @@ var serverHost = '${psqlName}.postgres.database.azure.com'
 resource createRoles 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   name: 'psql-create-roles'
   location: location
+  kind: 'AzureCLI'
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
@@ -82,9 +77,9 @@ resource createRoles 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
     }
   }
   properties: {
-    forceUpdateTag: newGuid()
+    forceUpdateTag: guid(subscription().id, psql.id, 'psql-create-roles')
     retentionInterval: 'PT1H'
-    azPowerShellVersion: null
+    azCliVersion: '2.61.0'
     scriptContent: '''
 #!/usr/bin/env bash
 set -euo pipefail
@@ -119,43 +114,6 @@ SQL
       {
         name: 'UAMI_CLIENT_ID'
         value: uamiClientId
-      }
-    ]
-  }
-}
-
-resource pePsql 'Microsoft.Network/privateEndpoints@2023-05-01' = {
-  name: 'pe-${psql.name}'
-  location: location
-  tags: tags
-  properties: {
-    subnet: {
-      id: subnetPeId
-    }
-    privateLinkServiceConnections: [
-      {
-        name: 'psql-conn'
-        properties: {
-          groupIds: [
-            'postgresqlServer'
-          ]
-          privateLinkServiceId: psql.id
-        }
-      }
-    ]
-    privateDnsZoneGroups: [
-      {
-        name: 'psql-dns'
-        properties: {
-          privateDnsZoneConfigs: [
-            {
-              name: 'privatelink.postgres.database.azure.com'
-              properties: {
-                privateDnsZoneId: subscriptionResourceId('Microsoft.Network/privateDnsZones', 'privatelink.postgres.database.azure.com')
-              }
-            }
-          ]
-        }
       }
     ]
   }

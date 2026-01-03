@@ -18,9 +18,6 @@ param appUiName string
 @description('Function App name.')
 param funcName string
 
-@description('Services VNet name (for VNet integration and PEs).')
-param vnetName string
-
 @description('App Service VNet integration subnet id.')
 param subnetAppsvcId string
 
@@ -30,10 +27,16 @@ param subnetPeId string
 @description('User-assigned managed identity resource id.')
 param uamiId string
 
+@description('Storage account name for Function runtime state (identity-based).')
+param storageAccountName string
+
 @description('Log Analytics Workspace resource ID.')
 param lawId string
 @description('Optional tags to apply.')
 param tags object = {}
+
+var storageBlobUri = 'https://${storageAccountName}.blob.core.windows.net'
+var storageQueueUri = 'https://${storageAccountName}.queue.core.windows.net'
 
 resource asp 'Microsoft.Web/serverfarms@2023-12-01' = {
   name: aspName
@@ -67,13 +70,13 @@ resource appApi 'Microsoft.Web/sites@2023-12-01' = {
     httpsOnly: true
     publicNetworkAccess: 'Disabled'
     serverFarmId: asp.id
+    virtualNetworkSubnetId: subnetAppsvcId
     siteConfig: {
       linuxFxVersion: 'DOCKER|${defaultContainer}'
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
       alwaysOn: true
       vnetRouteAllEnabled: true
-      virtualNetworkSubnetId: subnetAppsvcId
       scmIpSecurityRestrictionsDefaultAction: 'Deny'
       ipSecurityRestrictionsDefaultAction: 'Deny'
     }
@@ -95,13 +98,13 @@ resource appUi 'Microsoft.Web/sites@2023-12-01' = {
     httpsOnly: true
     publicNetworkAccess: 'Disabled'
     serverFarmId: asp.id
+    virtualNetworkSubnetId: subnetAppsvcId
     siteConfig: {
       linuxFxVersion: 'DOCKER|${defaultContainer}'
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
       alwaysOn: true
       vnetRouteAllEnabled: true
-      virtualNetworkSubnetId: subnetAppsvcId
       scmIpSecurityRestrictionsDefaultAction: 'Deny'
       ipSecurityRestrictionsDefaultAction: 'Deny'
     }
@@ -123,15 +126,45 @@ resource func 'Microsoft.Web/sites@2023-12-01' = {
     httpsOnly: true
     publicNetworkAccess: 'Disabled'
     serverFarmId: asp.id
+    virtualNetworkSubnetId: subnetAppsvcId
     siteConfig: {
       linuxFxVersion: 'DOCKER|${defaultContainer}'
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
       alwaysOn: true
       vnetRouteAllEnabled: true
-      virtualNetworkSubnetId: subnetAppsvcId
       scmIpSecurityRestrictionsDefaultAction: 'Deny'
       ipSecurityRestrictionsDefaultAction: 'Deny'
+      appSettings: [
+        {
+          name: 'AzureWebJobsStorage__accountName'
+          value: storageAccountName
+        }
+        {
+          name: 'AzureWebJobsStorage__blobServiceUri'
+          value: storageBlobUri
+        }
+        {
+          name: 'AzureWebJobsStorage__queueServiceUri'
+          value: storageQueueUri
+        }
+        {
+          name: 'AzureWebJobsStorage__credential'
+          value: 'ManagedIdentity'
+        }
+        {
+          name: 'FUNCTIONS_EXTENSION_VERSION'
+          value: '~4'
+        }
+        {
+          name: 'FUNCTIONS_WORKER_RUNTIME'
+          value: 'custom'
+        }
+        {
+          name: 'WEBSITE_CONTENTOVERVNET'
+          value: '1'
+        }
+      ]
     }
   }
 }
@@ -164,7 +197,7 @@ resource peAppApi 'Microsoft.Network/privateEndpoints@2023-05-01' = {
             {
               name: 'privatelink.azurewebsites.net'
               properties: {
-                privateDnsZoneId: subscriptionResourceId('Microsoft.Network/privateDnsZones', 'privatelink.azurewebsites.net')
+                privateDnsZoneId: resourceId(resourceGroup().name, 'Microsoft.Network/privateDnsZones', 'privatelink.azurewebsites.net')
               }
             }
           ]
@@ -201,7 +234,7 @@ resource peAppUi 'Microsoft.Network/privateEndpoints@2023-05-01' = {
             {
               name: 'privatelink.azurewebsites.net'
               properties: {
-                privateDnsZoneId: subscriptionResourceId('Microsoft.Network/privateDnsZones', 'privatelink.azurewebsites.net')
+                privateDnsZoneId: resourceId(resourceGroup().name, 'Microsoft.Network/privateDnsZones', 'privatelink.azurewebsites.net')
               }
             }
           ]
@@ -238,7 +271,7 @@ resource peFunc 'Microsoft.Network/privateEndpoints@2023-05-01' = {
             {
               name: 'privatelink.azurewebsites.net'
               properties: {
-                privateDnsZoneId: subscriptionResourceId('Microsoft.Network/privateDnsZones', 'privatelink.azurewebsites.net')
+                privateDnsZoneId: resourceId(resourceGroup().name, 'Microsoft.Network/privateDnsZones', 'privatelink.azurewebsites.net')
               }
             }
           ]

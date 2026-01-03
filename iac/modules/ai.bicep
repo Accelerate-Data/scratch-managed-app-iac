@@ -12,9 +12,6 @@ param searchName string
 @description('AI Foundry (Cognitive Services) name.')
 param aiName string
 
-@description('Services VNet name.')
-param vnetName string
-
 @description('Private Endpoints subnet ID.')
 param subnetPeId string
 
@@ -34,7 +31,7 @@ resource search 'Microsoft.Search/searchServices@2023-11-01' = {
   properties: {
     replicaCount: 1
     partitionCount: 1
-    publicNetworkAccess: 'Disabled'
+    publicNetworkAccess: 'disabled'
     hostingMode: 'default'
   }
 }
@@ -48,7 +45,7 @@ resource ai 'Microsoft.CognitiveServices/accounts@2023-05-01' = {
     name: 'S0'
   }
   properties: {
-    publicNetworkAccess: 'Disabled'
+    publicNetworkAccess: 'disabled'
   }
 }
 
@@ -79,7 +76,7 @@ resource peSearch 'Microsoft.Network/privateEndpoints@2023-05-01' = {
             {
               name: 'privatelink.search.windows.net'
               properties: {
-                privateDnsZoneId: subscriptionResourceId('Microsoft.Network/privateDnsZones', 'privatelink.search.windows.net')
+                privateDnsZoneId: resourceId(resourceGroup().name, 'Microsoft.Network/privateDnsZones', 'privatelink.search.windows.net')
               }
             }
           ]
@@ -116,7 +113,7 @@ resource peAi 'Microsoft.Network/privateEndpoints@2023-05-01' = {
             {
               name: 'privatelink.cognitiveservices.azure.com'
               properties: {
-                privateDnsZoneId: subscriptionResourceId('Microsoft.Network/privateDnsZones', 'privatelink.cognitiveservices.azure.com')
+                privateDnsZoneId: resourceId(resourceGroup().name, 'Microsoft.Network/privateDnsZones', 'privatelink.cognitiveservices.azure.com')
               }
             }
           ]
@@ -168,7 +165,4 @@ resource aiDiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
     ]
   }
 }
-@description('Optional tags to apply.')
-param tags object = {}
-
 // TODO: deploy AI Search and AI Foundry with private endpoints.

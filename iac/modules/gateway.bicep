@@ -15,9 +15,6 @@ param customerIpRanges array
 @description('Publisher IP ranges for WAF allowlist.')
 param publisherIpRanges array
 
-@description('Services VNet name.')
-param vnetName string
-
 @description('Application Gateway subnet ID.')
 param subnetAppgwId string
 
@@ -56,6 +53,48 @@ var wafRules = [
     cidrs: publisherIpRanges
   }
 ]
+
+var wafAllowRules = [for rule in wafRules: {
+  name: rule.name
+  priority: rule.priority
+  ruleType: 'MatchRule'
+  action: rule.action
+  matchConditions: [
+    {
+      matchVariables: [
+        {
+          variableName: 'RemoteAddr'
+        }
+      ]
+      operator: 'IPMatch'
+      negationCondition: false
+      matchValues: rule.cidrs
+    }
+  ]
+}]
+
+var wafCustomRules = concat(wafAllowRules, [
+  {
+    name: 'Deny-All'
+    priority: 1000
+    ruleType: 'MatchRule'
+    action: 'Block'
+    matchConditions: [
+      {
+        matchVariables: [
+          {
+            variableName: 'RemoteAddr'
+          }
+        ]
+        operator: 'IPMatch'
+        negationCondition: false
+        matchValues: [
+          '0.0.0.0/0'
+        ]
+      }
+    ]
+  }
+])
 
 resource appGw 'Microsoft.Network/applicationGateways@2023-04-01' = {
   name: agwName
@@ -124,47 +163,8 @@ resource appGw 'Microsoft.Network/applicationGateways@2023-04-01' = {
       firewallMode: 'Prevention'
       ruleSetType: 'OWASP'
       ruleSetVersion: '3.2'
-      customRules: [
-        for rule in wafRules: {
-          name: rule.name
-          priority: rule.priority
-          ruleType: 'MatchRule'
-          action: rule.action
-          matchConditions: [
-            {
-              matchVariables: [
-                {
-                  variableName: 'RemoteAddr'
-                }
-              ]
-              operator: 'IPMatch'
-              negationConditon: false
-              matchValues: rule.cidrs
-            }
-          ]
-        }
-      ] ++ [
-        {
-          name: 'Deny-All'
-          priority: 1000
-          ruleType: 'MatchRule'
-          action: 'Block'
-          matchConditions: [
-            {
-              matchVariables: [
-                {
-                  variableName: 'RemoteAddr'
-                }
-              ]
-              operator: 'IPMatch'
-              negationConditon: false
-              matchValues: [
-                '0.0.0.0/0'
-              ]
-            }
-          ]
-        }
-    ]
+      customRules: wafCustomRules
+    }
   }
 }
 
@@ -196,7 +196,6 @@ resource appGwDiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = 
       }
     ]
   }
-}
 }
 
 // TODO: deploy Application Gateway WAF_v2 with rules per PRD-30.

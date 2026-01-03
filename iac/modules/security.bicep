@@ -12,9 +12,6 @@ param storageName string
 @description('Container Registry name.')
 param acrName string
 
-@description('Services VNet name (for private endpoints).')
-param vnetName string
-
 @description('Private Endpoints subnet ID.')
 param subnetPeId string
 
@@ -25,10 +22,6 @@ param uamiPrincipalId string
 param lawId string
 @description('Optional tags to apply.')
 param tags object = {}
-
-resource vnet 'Microsoft.Network/virtualNetworks@2023-04-01' existing = {
-  name: vnetName
-}
 
 resource kv 'Microsoft.KeyVault/vaults@2023-02-01' = {
   name: kvName
@@ -145,7 +138,7 @@ resource peKv 'Microsoft.Network/privateEndpoints@2023-05-01' = {
             {
               name: 'privatelink.vaultcore.azure.net'
               properties: {
-                privateDnsZoneId: subscriptionResourceId('Microsoft.Network/privateDnsZones', 'privatelink.vaultcore.azure.net')
+                privateDnsZoneId: resourceId(resourceGroup().name, 'Microsoft.Network/privateDnsZones', 'privatelink.vaultcore.azure.net')
               }
             }
           ]
@@ -182,7 +175,7 @@ resource peStBlob 'Microsoft.Network/privateEndpoints@2023-05-01' = {
             {
               name: 'privatelink.blob.core.windows.net'
               properties: {
-                privateDnsZoneId: subscriptionResourceId('Microsoft.Network/privateDnsZones', 'privatelink.blob.core.windows.net')
+                privateDnsZoneId: resourceId(resourceGroup().name, 'Microsoft.Network/privateDnsZones', 'privatelink.blob.core.windows.net')
               }
             }
           ]
@@ -219,7 +212,7 @@ resource peStQueue 'Microsoft.Network/privateEndpoints@2023-05-01' = {
             {
               name: 'privatelink.queue.core.windows.net'
               properties: {
-                privateDnsZoneId: subscriptionResourceId('Microsoft.Network/privateDnsZones', 'privatelink.queue.core.windows.net')
+                privateDnsZoneId: resourceId(resourceGroup().name, 'Microsoft.Network/privateDnsZones', 'privatelink.queue.core.windows.net')
               }
             }
           ]
@@ -256,7 +249,7 @@ resource peStTable 'Microsoft.Network/privateEndpoints@2023-05-01' = {
             {
               name: 'privatelink.table.core.windows.net'
               properties: {
-                privateDnsZoneId: subscriptionResourceId('Microsoft.Network/privateDnsZones', 'privatelink.table.core.windows.net')
+                privateDnsZoneId: resourceId(resourceGroup().name, 'Microsoft.Network/privateDnsZones', 'privatelink.table.core.windows.net')
               }
             }
           ]
@@ -293,7 +286,7 @@ resource peAcr 'Microsoft.Network/privateEndpoints@2023-05-01' = {
             {
               name: 'privatelink.azurecr.io'
               properties: {
-                privateDnsZoneId: subscriptionResourceId('Microsoft.Network/privateDnsZones', 'privatelink.azurecr.io')
+                privateDnsZoneId: resourceId(resourceGroup().name, 'Microsoft.Network/privateDnsZones', 'privatelink.azurecr.io')
               }
             }
           ]
@@ -319,6 +312,16 @@ resource stBlobContributor 'Microsoft.Authorization/roleAssignments@2020-04-01-p
   scope: st
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe') // Storage Blob Data Contributor
+    principalId: uamiPrincipalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource stQueueContributor 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(st.id, uamiPrincipalId, 'st-queue-data-contrib')
+  scope: st
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '19e7f393-1728-4e7a-9c12-054fda5c492f') // Storage Queue Data Contributor
     principalId: uamiPrincipalId
     principalType: 'ServicePrincipal'
   }

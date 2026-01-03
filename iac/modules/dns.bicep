@@ -23,6 +23,7 @@ var zones = [
   'privatelink.azurewebsites.net'
   'privatelink.search.windows.net'
   'privatelink.cognitiveservices.azure.com'
+  'privatelink.azure-automation.net'
   'vibedata.internal'
 ]
 
@@ -32,8 +33,8 @@ resource privateZones 'Microsoft.Network/privateDnsZones@2020-06-01' = [for zone
   tags: tags
 }]
 
-resource vnetLinks 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = [for zone in zones: {
-  parent: privateZones[zone]
+resource vnetLinks 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = [for (zone, i) in zones: {
+  parent: privateZones[i]
   name: 'link-${vnetName}'
   location: 'global'
   properties: {

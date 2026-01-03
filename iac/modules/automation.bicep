@@ -12,6 +12,16 @@ param uamiId string
 @description('Admin Object ID for customer (for Automation role).')
 param adminObjectId string
 
+@description('Principal type for adminObjectId (User or Group).')
+@allowed([
+  'User'
+  'Group'
+])
+param adminPrincipalType string = 'User'
+
+@description('Private Endpoints subnet ID.')
+param subnetPeId string
+
 @description('Log Analytics Workspace resource ID.')
 param lawId string
 
@@ -29,7 +39,7 @@ resource automation 'Microsoft.Automation/automationAccounts@2023-11-01' = {
     }
   }
   properties: {
-    publicNetworkAccess: 'Enabled'
+    publicNetworkAccess: 'Disabled'
     disableLocalAuth: true
   }
   sku: {
@@ -38,6 +48,43 @@ resource automation 'Microsoft.Automation/automationAccounts@2023-11-01' = {
 }
 
 output automationId string = automation.id
+
+resource peAutomation 'Microsoft.Network/privateEndpoints@2023-05-01' = {
+  name: 'pe-${automation.name}'
+  location: location
+  tags: tags
+  properties: {
+    subnet: {
+      id: subnetPeId
+    }
+    privateLinkServiceConnections: [
+      {
+        name: 'automation-conn'
+        properties: {
+          groupIds: [
+            'AzureAutomation'
+          ]
+          privateLinkServiceId: automation.id
+        }
+      }
+    ]
+    privateDnsZoneGroups: [
+      {
+        name: 'automation-dns'
+        properties: {
+          privateDnsZoneConfigs: [
+            {
+              name: 'privatelink.azure-automation.net'
+              properties: {
+                privateDnsZoneId: resourceId(resourceGroup().name, 'Microsoft.Network/privateDnsZones', 'privatelink.azure-automation.net')
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
 
 resource automationDiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
   name: 'diag-law-automation'
@@ -70,7 +117,7 @@ resource adminAutomationJobOperator 'Microsoft.Authorization/roleAssignments@202
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4fe576fe-1146-4730-92eb-48519fa6bf9f')
     principalId: adminObjectId
-    principalType: 'ServicePrincipal'
+    principalType: adminPrincipalType
   }
 }
 
