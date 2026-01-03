@@ -12,6 +12,7 @@
     "postgresComputeTier": { "value": "GP_Standard_D2s_v3" },
     "aiServicesTier": { "value": "S1" },
     "lawRetentionDays": { "value": 30 },
+    "adminPrincipalType": { "value": "User" },
     "environment": { "value": "dev" },
     "owner": { "value": "ci" },
     "purpose": { "value": "ephemeral" },
