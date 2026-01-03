@@ -9,11 +9,14 @@ Added strict drift detection and enforcement workflow for dev/test environments 
   - `scripts/deploy/what_if_rg.sh` for what-if drift detection.
   - `scripts/deploy/apply_rg.sh` for apply in CD/manual workflows.
 - README updated with dev/test strict enforcement instructions.
+- RG guardrail: deployment scripts require the target RG to be tagged `IAC=true`.
+- Documented the additional delegated `/28` `snet-psql` subnet used for PostgreSQL.
+- CI hooks (recommended): `az bicep build` for `main.bicep` and `main.rg.bicep`, `what_if_rg.sh` + `diff_report.py` as a gate; added shellcheck-based lint test.
 
 ## Testing
 - `az bicep build -f iac/main.bicep --outdir /tmp/bicep`
 - `az bicep build -f iac/main.rg.bicep --outdir /tmp/bicep`
+- `pytest tests/test_shell_scripts.py` (runs shellcheck if installed)
 
 ## Notes
 - Strict enforcement uses Complete mode at RG scope; ensure the RG contains only managed resources to avoid accidental deletions.
-

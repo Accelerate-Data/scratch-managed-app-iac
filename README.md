@@ -24,6 +24,8 @@ az deployment sub what-if -f iac/main.bicep -l eastus -p @iac/params.dev.json
 
 ## Dev/test strict enforcement (RG scope)
 Use RG-scope deployment with Complete mode for drift enforcement in dev/test.
+Prereq: target RG must have tag `IAC=true` (guardrail to avoid accidental deletions).
+Note: An extra `/28` `snet-psql` subnet is created for PostgreSQL delegation in addition to PRD-listed subnets.
 
 What-if (CI gate):
 ```bash

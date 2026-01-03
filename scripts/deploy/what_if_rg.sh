@@ -9,6 +9,13 @@ LOCATION="${2:?location required}"
 PARAMS_FILE="${3:-iac/params.dev.json}"
 OUT_FILE="${4:-tests/state_check/what-if.json}"
 
+# Guardrail: require RG tag IAC=true (prevents accidental Complete-mode nukes)
+IAC_TAG=$(az group show -n "$RG" --query "tags.IAC" -o tsv 2>/dev/null || true)
+if [ "$IAC_TAG" != "true" ]; then
+  echo "ERROR: Resource group '$RG' must be tagged IAC=true before running Complete-mode what-if." >&2
+  exit 1
+fi
+
 echo "Running what-if (Complete mode) for iac/main.rg.bicep in $RG ($LOCATION) using $PARAMS_FILE"
 az deployment group what-if \
   -g "$RG" \
