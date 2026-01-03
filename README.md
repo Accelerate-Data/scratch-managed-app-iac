@@ -22,6 +22,20 @@ For a dry run without changes:
 az deployment sub what-if -f iac/main.bicep -l eastus -p @iac/params.dev.json
 ```
 
+## Dev/test strict enforcement (RG scope)
+Use RG-scope deployment with Complete mode for drift enforcement in dev/test.
+
+What-if (CI gate):
+```bash
+./scripts/deploy/what_if_rg.sh rg-vibedata-dev eastus iac/params.dev.json
+python tests/state_check/diff_report.py tests/state_check/what-if.json
+```
+
+Apply (CD / manual):
+```bash
+./scripts/deploy/apply_rg.sh rg-vibedata-dev eastus iac/params.dev.json
+```
+
 ## Dev/test state check
 To verify the live RG matches the Bicep in dev/test:
 ```bash
@@ -32,4 +46,5 @@ python tests/state_check/diff_report.py tests/state_check/what-if.json
 Keep parameter names and casing aligned with RFC-64 to match the eventual Marketplace handoff.
 
 ## Release Notes
+- 2026-01-03 — v0.2.0 dev/test strict enforcement: [docs/RELEASE-NOTES-2026-01-03-v0.2.0.md](docs/RELEASE-NOTES-2026-01-03-v0.2.0.md)
 - 2026-01-03 — v0.1.0 baseline: [docs/RELEASE-NOTES-2026-01-03.md](docs/RELEASE-NOTES-2026-01-03.md)

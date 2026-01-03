@@ -1,4 +1,6 @@
 .env
+.azure/
+.dotnet_bundle/
 .venv/
 .DS_Store
 docs/PRD*.md
