@@ -4,8 +4,9 @@ This repository contains the Bicep-based infrastructure for PRD-30 (managed appl
 
 ## Layout
 - `main.bicep` — subscription-scope entrypoint; wires RFC-64 parameters into resource-group modules.
+- `main.rg.bicep` — resource-group-scope entrypoint for dev/test drift enforcement (Complete mode).
 - `modules/*.bicep` — per-domain modules (identity, network, security, data, compute, gateway, ai, automation, diagnostics).
-- `lib/` — shared helpers (naming, constants).
+- `lib/` — shared helpers (naming per RFC-71, constants).
 - `params.dev.json` — sample parameters for local testing.
 
 ## Parameters (RFC-64 names)
@@ -88,6 +89,7 @@ Edit `tests/validator/expected/dev_expectation.template.json` to tighten or expa
 Keep parameter names and casing aligned with RFC-64 to match the eventual Marketplace handoff.
 
 ## Release Notes
+- 2026-01-05 — v0.5.0 RFC-71 deterministic naming: [docs/RELEASE-NOTES-2026-01-05-v0.5.0.md](docs/RELEASE-NOTES-2026-01-05-v0.5.0.md)
 - 2026-01-03 — v0.4.0 module validator + RFC-64 params: [docs/RELEASE-NOTES-2026-01-03-v0.4.0.md](docs/RELEASE-NOTES-2026-01-03-v0.4.0.md)
 - 2026-01-03 — v0.3.0 validator resource-level coverage: [docs/RELEASE-NOTES-2026-01-03-v0.3.0.md](docs/RELEASE-NOTES-2026-01-03-v0.3.0.md)
 - 2026-01-03 — v0.2.0 dev/test strict enforcement: [docs/RELEASE-NOTES-2026-01-03-v0.2.0.md](docs/RELEASE-NOTES-2026-01-03-v0.2.0.md)
