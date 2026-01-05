@@ -1,7 +1,10 @@
 targetScope = 'resourceGroup'
 
 @description('Resource group name used for deterministic naming seed (RFC-64: resourceGroup).')
-param resourceGroup string = resourceGroup().name
+param resourceGroup string
+
+@description('Managed Resource Group name (RFC-64 mrgName).')
+param mrgName string = resourceGroup
 
 @description('Azure region for deployment.')
 param location string
@@ -20,36 +23,71 @@ param contactEmail string
 param adminPrincipalType string = 'User'
 
 @description('Services VNet CIDR block (RFC-64).')
-param servicesVnetCidr string
+param servicesVnetCidr string = '10.100.0.0/24'
 
 @description('Customer IP ranges for WAF allowlist (RFC-64).')
+@minLength(1)
 param customerIpRanges array
 
 @description('Publisher IP ranges for WAF allowlist (RFC-64).')
+@minLength(1)
 param publisherIpRanges array
 
 @description('App Service Plan SKU (RFC-64 sku).')
-param sku string
+@allowed([
+  'P1v3'
+  'P2v3'
+  'P3v3'
+])
+param sku string = 'P1v3'
+
+@description('AKS node size (RFC-64 nodeSize).')
+@allowed([
+  'Standard_D4s_v3'
+  'Standard_D8s_v3'
+  'Standard_D16s_v3'
+])
+param nodeSize string = 'Standard_D4s_v3'
 
 @description('PostgreSQL compute tier (RFC-64 computeTier).')
-param computeTier string
+@allowed([
+  'GP_Standard_D2s_v3'
+  'GP_Standard_D4s_v3'
+])
+param computeTier string = 'GP_Standard_D2s_v3'
 
 @description('AI Services tier (RFC-64).')
-param aiServicesTier string
+@allowed([
+  'S1'
+  'S2'
+  'S3'
+])
+param aiServicesTier string = 'S1'
 
 @description('Log Analytics retention in days (RFC-64 retentionDays display).')
-param retentionDays int
+@minValue(30)
+@maxValue(730)
+param retentionDays int = 30
 
 @description('Application Gateway capacity (RFC-64 appGwCapacity display).')
+@minValue(1)
+@maxValue(10)
 param appGwCapacity int = 1
 
 @description('Application Gateway SKU (RFC-64 appGwSku display).')
+@allowed([
+  'WAF_v2'
+])
 param appGwSku string = 'WAF_v2'
 
 @description('PostgreSQL storage in GB (RFC-64 storageGB display).')
+@minValue(32)
+@maxValue(16384)
 param storageGB int = 128
 
 @description('PostgreSQL backup retention days (RFC-64 backupRetentionDays display).')
+@minValue(7)
+@maxValue(35)
 param backupRetentionDays int = 7
 
 @description('Optional tags: environment (dev/release/prod), owner, purpose, created (ISO8601).')
@@ -63,7 +101,7 @@ module naming 'lib/naming.bicep' = {
   name: 'naming'
   scope: subscription()
   params: {
-    resourceGroupName: resourceGroup
+    resourceGroupName: mrgName
     purpose: 'platform'
   }
 }
@@ -93,8 +131,16 @@ module identity 'modules/identity.bicep' = {
     uamiName: naming.outputs.names.uami
     adminObjectId: adminObjectId
     adminPrincipalType: adminPrincipalType
-    lawId: diagnostics.outputs.lawId
+    lawName: naming.outputs.names.law
     tags: tags
+  }
+}
+
+module identitySubscription 'modules/identity.subscription.bicep' = {
+  name: 'identity-subscription'
+  scope: subscription()
+  params: {
+    uamiPrincipalId: identity.outputs.uamiPrincipalId
   }
 }
 
@@ -116,7 +162,6 @@ module dns 'modules/dns.bicep' = {
   name: 'dns'
   params: {
     vnetName: naming.outputs.names.vnet
-    zoneIds: dns.outputs.zoneIds
     tags: tags
   }
 }
@@ -210,7 +255,6 @@ module automation 'modules/automation.bicep' = {
     location: location
     automationName: naming.outputs.names.automation
     uamiId: identity.outputs.uamiId
-    uamiPrincipalId: identity.outputs.uamiPrincipalId
     adminObjectId: adminObjectId
     adminPrincipalType: adminPrincipalType
     subnetPeId: network.outputs.subnetPeId
