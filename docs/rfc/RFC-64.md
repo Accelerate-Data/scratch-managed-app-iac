@@ -1,3 +1,15 @@
+---
+notion_page_id: "2d9309d25a8c80a4a2d4f34bb3c7b207"
+notion_numeric_id: 64
+doc_id: "RFC-64"
+notion_title: "Marketplace Deployment Parameters"
+source: "notion"
+pulled_at: "2026-01-06T09:30:00Z"
+type: "RFC"
+root_prd_numeric_id: 30
+linear_issue_id: "VD-69"
+---
+
 # 📜 Marketplace Deployment Parameters
 
 **RFC ID:** RFC-64  
@@ -42,7 +54,7 @@ During the marketplace deployment
 | **Managed Resource Group** | mrgName | String | vd-RG-\<8-char-nanoid\> | Yes | Cannot be changed post deployment. |
 | **Admin Access** | adminObjectId | GUID | — | Yes | Required. User or group ObjectID from customer Entra. |
 | **VNet** | servicesVnetCidr | CIDR format, /24 to /16 | 10.100.0.0/24 | Yes | Must not overlap with 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16. Subnets derived internally. |
-| **Customer IP** | customerIpRanges | Array of CIDR | — | Yes | Required. Empty = error. WAF allowlist for customer UI access. |
+| **Customer IP** | customerIpRanges | Array of CIDR | — | Yes | Required. Empty = error. WAF allowlist for customer UI access.  |
 | **Publisher IP** | publisherIpRanges | Array of CIDR | \[Accelerate IPs\] | Display only | WAF allowlist for publisher managed services team UI access. Cannot be edited by user. |
 | **Application Gateway** | appGwSku | WAF_v2 | WAF_v2 | Display only | Fixed. WAF required per RFC-42. |
 | **Application Gateway** | appGwCapacity | 1-10 | 1 | Display only | Can be changed post-deployment via runbook. |
@@ -61,9 +73,8 @@ During the marketplace deployment
 
 ---
 
-# Open Questions
+▶# Open Questions
 	- 
 	- 
 	- 
 	-
-

@@ -17,3 +17,7 @@ iac/**/*.json
 
 # plan files create by Codex 
 .vibedata/
+
+#PRDs and RFCs
+/docs/prd/
+/docs/rfc/

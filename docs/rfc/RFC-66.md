@@ -1,4 +1,16 @@
-# 📜 Developer and Release Pipeline Architecture
+---
+notion_page_id: "2d9309d25a8c8046b2dfff34ea740661"
+notion_numeric_id: 66
+doc_id: "RFC-66"
+notion_title: "Engineering CI/CD"
+source: "notion"
+pulled_at: "2026-01-06T09:30:00Z"
+type: "RFC"
+root_prd_numeric_id: 30
+linear_issue_id: "VD-69"
+---
+
+# 📜 Engineering CI/CD
 
 **RFC ID:** RFC-66  
 **Status:** In Review  

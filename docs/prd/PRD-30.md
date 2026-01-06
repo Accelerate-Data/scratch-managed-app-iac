@@ -1,3 +1,15 @@
+---
+notion_page_id: "2d9309d25a8c80748483cc327cb12a68"
+notion_numeric_id: 30
+doc_id: "PRD-30"
+notion_title: "IaC for Managed Application Infrastructure Deployment"
+source: "notion"
+pulled_at: "2026-01-06T09:30:00Z"
+type: "PRD"
+root_prd_numeric_id: 30
+linear_issue_id: "VD-69"
+---
+
 # 💡 IaC for Managed Application Infrastructure Deployment
 
 **PRD ID:** PRD-30  
@@ -254,4 +266,3 @@ Successful completion of PRD-30 does **not** imply that the deployed instance is
 
 # 6. Open Questions
 None.
-

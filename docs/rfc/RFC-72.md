@@ -1,3 +1,15 @@
+---
+notion_page_id: "2dc309d25a8c8093abe3e76201f6c530"
+notion_numeric_id: 72
+doc_id: "RFC-72"
+notion_title: "Unified Engine Tables (DLQ and History)"
+source: "notion"
+pulled_at: "2026-01-06T09:30:00Z"
+type: "RFC"
+root_prd_numeric_id: 30
+linear_issue_id: "VD-69"
+---
+
 # 📜 Unified Engine Tables (DLQ and History)
 
 **RFC ID:** RFC-72  

@@ -1,3 +1,15 @@
+---
+notion_page_id: "2d5309d25a8c80068f27c475469f646d"
+notion_numeric_id: 51
+doc_id: "RFC-51"
+notion_title: "Observability Standards"
+source: "notion"
+pulled_at: "2026-01-06T09:30:00Z"
+type: "RFC"
+root_prd_numeric_id: 30
+linear_issue_id: "VD-69"
+---
+
 # 📜 Observability Standards
 
 **RFC ID:** RFC-51  
@@ -32,9 +44,9 @@ Defines observability and alerting standards for VibeData managed applications. 
 ## 1. Observability Architecture
 ### 1.1 Hybrid Model
 | Domain | Log Destination | Alert Source |
-|--------|----------------|--------------|
+|--------|-----------------|--------------|
 | Azure Infrastructure | Log Analytics Workspace | Azure Monitor Alert Rules |
-| Fabric Workspaces | Customer Eventhouse | Data Activator |
+| Fabric Workspaces | Fabric Eventhouse (per data domain) | Data Activator |
 
 ### 1.2 Alert Flow
 ```plain text
@@ -53,7 +65,6 @@ All Azure resources emit diagnostics per RFC-71 Section 19. Configuration applie
 
 ### 2.2 Log Analytics Workspace
 Configuration per RFC-71 Section 11.
-
 | Setting | Value |
 |---------|-------|
 | SKU | PerGB2018 |
@@ -63,7 +74,6 @@ Configuration per RFC-71 Section 11.
 ### 2.3 Custom Log Table
 Single custom table for operational logging from VibeData services.
 **Table:** `VibeData_Operations_CL`
-
 | Column | Type | Description |
 |--------|------|-------------|
 | TimeGenerated | datetime | Event timestamp |
@@ -88,6 +98,7 @@ VibeData_Operations_CL
 VibeData_Operations_CL
 | where CorrelationId == "abc-123"
 | order by TimeGenerated asc
+
 ```
 
 ---
@@ -95,7 +106,6 @@ VibeData_Operations_CL
 ## 3. Fabric Workspace Observability
 ### 3.1 Workspace Monitoring
 Fabric Workspace Monitoring is customer-enabled and emits logs to Eventhouse.
-
 | Setting | Value |
 |---------|-------|
 | Destination | Customer Eventhouse |
@@ -107,12 +117,10 @@ During data domain pairing, VibeData validates that the Fabric workspace:
 - has Workspace Monitoring enabled
 - has an Eventhouse destination configured
 - has a Data Activator alert rule with webhook pointing to `fabric-alert-ingest`
-
 Results are used to bootstrap the registry under `dataDomains[].fabricWorkspace.monitoring` (RFC-45).
 
 ### 3.3 Data Activator Configuration
 Data Activator monitors Eventhouse tables and triggers webhooks on alert conditions.
-
 | Setting | Value |
 |---------|-------|
 | Trigger Source | Eventhouse (ItemJobEventLogs) |
@@ -146,9 +154,8 @@ All Azure Monitor alerts use Common Alert Schema for consistent parsing.
 ## 5. Alert Processing Architecture
 ### 5.1 Components
 Three Azure Functions handle alert ingestion and processing:
-
 | Function | Trigger | Purpose |
-|----------|--------|---------|
+|----------|---------|---------|
 | `monitor-alert-ingest` | HTTP | Receives Azure Monitor webhooks |
 | `fabric-alert-ingest` | HTTP | Receives Data Activator webhooks |
 | `alert-processor` | Queue | Processes alerts from queue |
@@ -198,14 +205,12 @@ Queue-triggered function that processes alerts:
 ## 6. Storage Resources
 ### 6.1 Queue
 Per RFC-42 Section 9.2:
-
 | Queue | Purpose |
 |-------|---------|
 | `monitor-alerts-queue` | Alert messages from both sources |
 
 ### 6.2 Tables
 Per RFC-42 Section 9.3:
-
 | Table | Purpose |
 |-------|---------|
 | `alertsHistory` | Processed alert records |
@@ -233,4 +238,3 @@ None
 
 # Open Questions
 None.
-

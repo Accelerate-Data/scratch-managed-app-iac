@@ -1,3 +1,15 @@
+---
+notion_page_id: "2bc309d25a8c808cb0b8f5d26f590c42"
+notion_numeric_id: 13
+doc_id: "RFC-13"
+notion_title: "Identity Architecture"
+source: "notion"
+pulled_at: "2026-01-06T09:30:00Z"
+type: "RFC"
+root_prd_numeric_id: 30
+linear_issue_id: "VD-69"
+---
+
 # 📜 Identity Architecture
 
 **RFC ID:** RFC-13  
@@ -66,7 +78,6 @@ User-Assigned Managed Identity: `vibedata-uami`
 - Runbooks use Azure SDK with `DefaultAzureCredential` (automatically uses UAMI)
 - Access automatically revoked when managed application deleted
 - All operations logged to LAW with UAMI as actor
-
 **Assigned Roles:**
 - Key Vault Secrets Officer (Key Vault scope) - Manage all secrets
 - Log Analytics Contributor (LAW scope) - Write logs and metrics
@@ -80,14 +91,12 @@ User-Assigned Managed Identity: `vibedata-uami`
 
 ---
 
-### **1.3 Customer Identity**<br>
-Customer Entra User or Group provided during marketplace deployment as `adminObjectId` parameter
+### **1.3 Customer Identity**<br>Customer Entra User or Group provided during marketplace deployment as `adminObjectId` parameter
 **Purpose**: Customer administrators can view resources and execute approved operations.
 **Assigned Roles** (on MRG):
 - Reader - View all resources and configurations
 - Automation Job Operator - Execute runbooks
-
-**Restrictions**:
+**Restrictions:**
 - Cannot modify infrastructure resources directly (read-only)
 - Cannot modify any secrets
 - Cannot modify automation runbooks
@@ -104,7 +113,6 @@ Customer Entra User or Group provided during marketplace deployment as `adminObj
 	2. UAMI actions: Tagged with `vibedata-uami` identity
 	3. Customer actions: Tagged with customer user/group identity
 5. RBAC Scope Management
-
 | Resource | vibedata-uami | Customer | Publisher Group | Publisher SPN |
 |----------|---------------|----------|-----------------|---------------|
 | MRG (overall) | Contributor | Reader | Contributor | Contributor (inherited) |
@@ -114,4 +122,3 @@ Customer Entra User or Group provided during marketplace deployment as `adminObj
 | ACR | Push + Pull | None | None | None |
 | Storage Account | Blob Contributor | None | None | None |
 | LAW | Contributor | None | None | Contributor (direct) |
-

@@ -1,7 +1,19 @@
+---
+notion_page_id: "2bc309d25a8c806ea40fd88b75dab0dc"
+notion_numeric_id: 19
+doc_id: "PRD-19"
+notion_title: "Marketplace Deployment"
+source: "notion"
+pulled_at: "2026-01-06T09:30:00Z"
+type: "PRD"
+root_prd_numeric_id: 30
+linear_issue_id: "VD-69"
+---
+
 # 💡 Marketplace Deployment
 
 **PRD ID:** PRD-19  
-**Status:** Draft  
+**Status:** Approved  
 **Priority:** High  
 **Area:** Deployment & Upgrade  
 **Impact Type:** Customer
@@ -168,4 +180,3 @@ Enable customers to deploy Vibedata from Azure Marketplace with a single click, 
 - [ ] What happens if provisioning webhook fails? (Azure retries? Manual recovery?)
 - [ ] What is the rollback procedure if deployment partially succeeds?
 - [ ] Should health bootstrap block deployment completion or run async?
-

@@ -1,3 +1,15 @@
+---
+notion_page_id: "2d3309d25a8c8055a8e7fdda1fddcf83"
+notion_numeric_id: 42
+doc_id: "RFC-42"
+notion_title: "Managed Application Architecture"
+source: "notion"
+pulled_at: "2026-01-06T09:30:00Z"
+type: "RFC"
+root_prd_numeric_id: 30
+linear_issue_id: "VD-69"
+---
+
 # 📜 Managed Application Architecture
 
 **RFC ID:** RFC-42  
@@ -211,4 +223,3 @@ Configuration per RFC-71 Section 11.
 
 # Impact
 **Alignment with WAF**
-

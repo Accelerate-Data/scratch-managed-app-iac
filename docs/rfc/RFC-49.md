@@ -1,3 +1,15 @@
+---
+notion_page_id: "2d5309d25a8c80dda14de1b053fd6e95"
+notion_numeric_id: 49
+doc_id: "RFC-49"
+notion_title: "Versioning"
+source: "notion"
+pulled_at: "2026-01-06T09:30:00Z"
+type: "RFC"
+root_prd_numeric_id: 30
+linear_issue_id: "VD-69"
+---
+
 # 📜 Versioning
 
 **RFC ID:** RFC-49  
@@ -37,8 +49,7 @@ Platform will use SemVer `v{major}.{minor}.{patch}` at the overall release manif
 - Component identity scope
 	- Component names in the release manifest are stable and immutable across platform versions; renaming a component requires treating it as a new logical component.
 	- Components in the release manifest are keyed by component name.
-	- During marketplace deployment and registry bootstrap, each manifest component name is mapped to a unique instance-scoped componentId
-
+	- During marketplace deployment and registry bootstrap, each manifest component name is mapped to a unique instance-scoped componentId<br>
 ### **2.1 Release Manifest Schema**
 ```json
 {
@@ -68,13 +79,11 @@ Platform will use SemVer `v{major}.{minor}.{patch}` at the overall release manif
 The publisher is the source of truth for the release manifest.
 - **Managed Application Storage** – During both Marketplace deployment and streaming updates, the release manifest is copied verbatim into the managed application's artifact storage (Azure Blob Storage). This locally stored manifest becomes the authoritative manifest for that instance, and all runtime decisions (component bootstrap, upgrades, and health convergence) are driven exclusively from it.
 - **Immutability** – Once persisted into the managed application, a manifest is treated as immutable and is never modified in-place. Platform version changes are effected only by replacing the manifest via the publisher-driven manifest-update runbook as part of the streaming updates flow.
-
 The following scenarios describe how the manifest file is made available to the managed application:
 - Marketplace Deployment – Marketplace deployment reads the manifest via a deployment-time pull from the Publisher ACR (see RFC-43 for Day-0 bootstrap authentication). The manifest is published as an OCI artifact and additionally tagged as `latest` per marketplace offer and release channel to support deterministic Day-0 bootstrap.
 - Streaming Updates – During streaming updates, the managed application pulls the target release manifest from the Publisher ACR using the same short-lived, instance-scoped ACR token already provisioned for artifact pulls. The manifest is then persisted as a versioned, immutable file in the managed application's artifact storage; the registry's desiredVersion determines which manifest is active.
 
 ---
 
-# Open Questions
+▶# Open Questions
 	-
-

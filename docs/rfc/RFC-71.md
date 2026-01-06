@@ -1,3 +1,15 @@
+---
+notion_page_id: "2db309d25a8c805e9698f78d6c5438e3"
+notion_numeric_id: 71
+doc_id: "RFC-71"
+notion_title: "Infrastructure Standards"
+source: "notion"
+pulled_at: "2026-01-06T09:30:00Z"
+type: "RFC"
+root_prd_numeric_id: 30
+linear_issue_id: "VD-69"
+---
+
 # 📜 Infrastructure Standards
 
 **RFC ID:** RFC-71  
